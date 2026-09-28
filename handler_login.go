@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"os"
 )
 
 func handlerLogin(s *state, cmd command) error {
@@ -10,11 +12,17 @@ func handlerLogin(s *state, cmd command) error {
 		return errors.New("cmd args empty")
 	}
 	userName := cmd.Args[0]
-	err := s.Cfg.SetUser(userName)
+	_, err := s.db.GetUser(context.Background(), userName)
 	if err != nil {
-		return errors.New("unable to set user")
+		fmt.Println("user doesn't exist")
+		os.Exit(1)
+	}
+
+	err = s.cfg.SetUser(userName)
+	if err != nil {
+		return err
 	}
 
 	fmt.Printf("User has been set to %s\n", userName)
-	return err
+	return nil
 }

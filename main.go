@@ -1,23 +1,37 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	config "github.com/william-jce/blog-aggregator/internal/config"
+	"github.com/william-jce/blog-aggregator/internal/database"
 )
 
 func main() {
+	godotenv.Load(".env")
+	dbURL := os.Getenv("DB_URL")
+	db, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	cfg, err := config.Read()
 	if err != nil {
 		log.Fatalf("unable to read config file: %v", err)
 	}
 
-	appState := state{Cfg: &cfg}
+	dbQueries := database.New(db)
+	appState := state{db: dbQueries, cfg: &cfg}
+
 	appCommands := commands{CommandMap: make(map[string]func(*state, command) error)}
 
 	appCommands.register("login", handlerLogin)
+	appCommands.register("register", handlerRegister)
 
 	userArgs := os.Args
 	if len(userArgs) < 2 {

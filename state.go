@@ -1,7 +1,11 @@
 package main
 
-import "github.com/william-jce/blog-aggregator/internal/config"
+import (
+	"github.com/william-jce/blog-aggregator/internal/config"
+	"github.com/william-jce/blog-aggregator/internal/database"
+)
 
 type state struct {
-	Cfg *config.Config
+	db  *database.Queries
+	cfg *config.Config
 }
