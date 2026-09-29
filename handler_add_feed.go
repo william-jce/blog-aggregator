@@ -13,7 +13,7 @@ func handlerAddFeed(s *state, cmd command) error {
 	userName := s.cfg.CurrentUserName
 
 	if len(cmd.Args) != 2 {
-		return fmt.Errorf("usage: %s <name> <url>", cmd.Name)
+		return fmt.Errorf("usage: %s <name> <url>\n", cmd.Name)
 	}
 
 	user, err := s.db.GetUser(context.Background(), userName)
