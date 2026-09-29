@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -17,19 +16,16 @@ type Config struct {
 func Read() (Config, error) {
 	filePath, err := getConfigFilePath()
 	if err != nil {
-		log.Printf("Error getting file path: %v", err)
-		return Config{}, err
+		return Config{}, fmt.Errorf("unable to get file path: %w", err)
 	}
 	config := Config{}
 
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Printf("Error reading file: %v", err)
-		return Config{}, err
+		return Config{}, fmt.Errorf("unable to read file: %w", err)
 	}
 	if err := json.Unmarshal(data, &config); err != nil {
-		log.Printf("Error unmarshalling JSON: %v", err)
-		return Config{}, err
+		return Config{}, fmt.Errorf("unable to unmarshal JSON: %w", err)
 	}
 
 	return config, nil
@@ -46,7 +42,7 @@ func (cfg *Config) SetUser(currentUserName string) error {
 func getConfigFilePath() (string, error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return fmt.Sprintf("Error: %v", err), err
+		return "", fmt.Errorf("unable to get directory path: %w", err)
 	}
 	filePath := homeDir + "/" + configFileName
 	return filePath, nil
@@ -55,14 +51,12 @@ func getConfigFilePath() (string, error) {
 func write(cfg Config) error {
 	jsonData, err := json.Marshal(cfg)
 	if err != nil {
-		log.Printf("Error marshalling JSON: %v", err)
-		return err
+		return fmt.Errorf("unable to marshal JSON: %v", err)
 	}
 
 	filePath, err := getConfigFilePath()
 	if err != nil {
-		log.Printf("Error getting file path: %v", err)
-		return err
+		return fmt.Errorf("unable to get file path: %v", err)
 	}
 	err = os.WriteFile(filePath, jsonData, 0600)
 	if err != nil {
