@@ -8,9 +8,9 @@ import (
 func handlerReset(s *state, cmd command) error {
 	err := s.db.DeleteAllUsers(context.Background())
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't delete users: %w", err)
 	}
 
-	fmt.Println("successfully deleted all users")
+	fmt.Println("Successfully reset user database.")
 	return nil
 }

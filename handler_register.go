@@ -33,7 +33,7 @@ func handlerRegister(s *state, cmd command) error {
 
 	err = s.cfg.SetUser(userName)
 	if err != nil {
-		return err
+		return fmt.Errorf("couldn't set user: %w", err)
 	}
 
 	fmt.Println("user was created")
