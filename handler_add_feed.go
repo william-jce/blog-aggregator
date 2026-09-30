@@ -13,7 +13,7 @@ func handlerAddFeed(s *state, cmd command) error {
 	userName := s.cfg.CurrentUserName
 
 	if len(cmd.Args) != 2 {
-		return fmt.Errorf("usage: %s <name> <url>\n", cmd.Name)
+		return fmt.Errorf("usage: %s <name> <url>", cmd.Name)
 	}
 
 	user, err := s.db.GetUser(context.Background(), userName)
@@ -35,6 +35,14 @@ func handlerAddFeed(s *state, cmd command) error {
 	if err != nil {
 		return fmt.Errorf("creating feed: %w", err)
 	}
+
+	_, err = s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	})
 
 	fmt.Printf("Feed: %+v\n", feed)
 	return nil
