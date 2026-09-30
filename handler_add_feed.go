@@ -9,16 +9,9 @@ import (
 	"github.com/william-jce/blog-aggregator/internal/database"
 )
 
-func handlerAddFeed(s *state, cmd command) error {
-	userName := s.cfg.CurrentUserName
-
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage: %s <name> <url>", cmd.Name)
-	}
-
-	user, err := s.db.GetUser(context.Background(), userName)
-	if err != nil {
-		return fmt.Errorf("getting user: %w", err)
 	}
 
 	name := cmd.Args[0]

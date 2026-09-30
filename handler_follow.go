@@ -9,17 +9,13 @@ import (
 	"github.com/william-jce/blog-aggregator/internal/database"
 )
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.Name)
 	}
 
 	url := cmd.Args[0]
 
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("getting user: %w", err)
-	}
 	feed, err := s.db.GetFeed(context.Background(), url)
 	if err != nil {
 		return fmt.Errorf("getting feed: %w", err)
