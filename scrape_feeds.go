@@ -2,7 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"log"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/william-jce/blog-aggregator/internal/database"
 )
 
 func scrapeFeeds(s *state) error {
@@ -20,15 +27,30 @@ func scrapeFeeds(s *state) error {
 	if err != nil {
 		return fmt.Errorf("fetching feed: %w", err)
 	}
-	// feeds, err := s.db.GetFeeds(context.Background())
-	// if err != nil {
-	// 	return fmt.Errorf("getting feeds: %w", err)
-	// }
 
-	fmt.Println("Feed Titles:")
 	for _, feedItem := range feed.Channel.Item {
-		fmt.Printf("%s\n", feedItem.Title)
-		fmt.Println("")
+		description := sql.NullString{String: feedItem.Description, Valid: feedItem.Description != ""}
+		var publishedAt sql.NullTime
+		pubDate, err := time.Parse(time.RFC1123Z, feedItem.PubDate)
+		if err == nil {
+			publishedAt = sql.NullTime{Time: pubDate, Valid: true}
+		}
+		_, err = s.db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       feedItem.Title,
+			Url:         feedItem.Link,
+			Description: description,
+			PublishedAt: publishedAt,
+			FeedID:      feedToFetch.ID,
+		})
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			log.Printf("creating post: %v\n", err)
+		}
 	}
 
 	return nil
