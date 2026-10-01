@@ -6,23 +6,20 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	config "github.com/william-jce/blog-aggregator/internal/config"
-	"github.com/william-jce/blog-aggregator/internal/database"
+	config "github.com/william-jce/gator/internal/config"
+	"github.com/william-jce/gator/internal/database"
 )
 
 func main() {
-	godotenv.Load(".env")
-	dbURL := os.Getenv("DB_URL")
-	db, err := sql.Open("postgres", dbURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	cfg, err := config.Read()
 	if err != nil {
 		log.Fatalf("unable to read config file: %v", err)
+	}
+
+	db, err := sql.Open("postgres", cfg.DbUrl)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	dbQueries := database.New(db)

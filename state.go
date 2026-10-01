@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/william-jce/blog-aggregator/internal/config"
-	"github.com/william-jce/blog-aggregator/internal/database"
+	"github.com/william-jce/gator/internal/config"
+	"github.com/william-jce/gator/internal/database"
 )
 
 type state struct {

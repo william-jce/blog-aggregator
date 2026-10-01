@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/william-jce/blog-aggregator/internal/database"
+	"github.com/william-jce/gator/internal/database"
 )
 
 func scrapeFeeds(s *state) error {
