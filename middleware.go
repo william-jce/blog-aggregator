@@ -11,7 +11,7 @@ func middlewareLoggedIn(handler func(s *state, cmd command, user database.User) 
 	return func(s *state, cmd command) error {
 		user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
 		if err != nil {
-			return fmt.Errorf("getting user data: %w", err)
+			return fmt.Errorf("getting user: %w", err)
 		}
 		return handler(s, cmd, user)
 	}
